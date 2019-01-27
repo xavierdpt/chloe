@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
+import AuthContext from '../context/auth-context';
 import './Auth.css';
 
 class AuthPage extends Component {
     state = {
         isLogin: true
-    }   
+    };
+    
+    static contextType = AuthContext;
+
     constructor(props) {
         super(props);
         this.emailRef = React.createRef();
@@ -38,7 +42,12 @@ class AuthPage extends Component {
                 throw new Error('Failed !');
             }
             return res.json();
-        }).then(console.log)
+        }).then(response => {
+            if(response.data.login.token) {
+                const {token, userId, tokenExpiration} = response.data.login;
+                this.context.login(token, userId, tokenExpiration);
+            }
+        })
         .catch(console.log);
         
     }
